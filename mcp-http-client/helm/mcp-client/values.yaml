@@ -1,0 +1,49 @@
+replicaCount: 1
+
+image:
+  repository: quay.io/your-org/mcp-client
+  tag: latest
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+  name: ""
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1002
+  fsGroup: 1002
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+service:
+  enabled: false
+  type: ClusterIP
+  port: 8080
+
+route:
+  enabled: false
+  host: ""
+
+config:
+  serverBaseUrl: http://mcp-server:8000
+  requestTimeoutSeconds: "120"
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+hpa:
+  enabled: false
+
+command: ["sleep", "infinity"]

@@ -1,0 +1,84 @@
+replicaCount: 2
+
+image:
+  repository: quay.io/your-org/mcp-server
+  tag: latest
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  fsGroup: 1001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: false
+
+route:
+  enabled: true
+  host: mortgage-mcp.apps.cluster.example.com
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 70
+
+config:
+  logLevel: INFO
+  embeddingModel: models/text-embedding-004
+  embeddingDimensions: 768
+  chunkSize: 1200
+  chunkOverlap: 200
+  ragTopK: 5
+  ragSimilarityThreshold: 0.65
+  documentsPath: /data/documents
+  geminiModel: gemini-1.5-flash
+  skipStartupIngest: "false"
+
+secrets:
+  # Base64 placeholders — override at install time
+  googleApiKey: ""
+
+database:
+  host: postgres.company.svc.cluster.local
+  port: "5432"
+  name: mortgage
+  user: postgres
+  password: ""
+
+extraEnv: []
+
+# Optional: mount a PVC or ConfigMap with internal policy documents at /data/documents
+extraVolumeMounts: []
+
+extraVolumes: []

@@ -1,0 +1,11 @@
+{
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/mortgage-mcp-platform/mcp-server",
+    "${workspaceFolder}/mcp-http-client"
+  ],
+  "editor.formatOnSave": true,
+  "files.insertFinalNewline": true,
+  "[python]": {
+    "editor.tabSize": 4
+  }
+}

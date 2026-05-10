@@ -1,0 +1,15 @@
+1. Route (OpenShift):
+{{- if .Values.route.enabled }}
+   Host: {{ .Values.route.host }}
+{{- else }}
+   Route disabled — expose via ingress or port-forward.
+{{- end }}
+
+2. Service:
+   {{ include "mcp-server.fullname" . }}:{{ .Values.service.port }}
+
+3. Database:
+   Ensure PostgreSQL + pgvector reachable at {{ .Values.database.host }}:{{ .Values.database.port }}.
+
+4. Secrets:
+   Populate GOOGLE_API_KEY and DATABASE_PASSWORD at install time.

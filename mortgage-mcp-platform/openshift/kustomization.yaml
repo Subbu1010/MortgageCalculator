@@ -1,0 +1,7 @@
+# Optional: assemble raw manifests locally with:
+# kubectl kustomize openshift/
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - raw/mcp-server-service.yaml
+  - raw/mcp-server-deployment.yaml
