@@ -1,0 +1,881 @@
+Use the prompt below in Gemini, Cursor, Claude Code, or another code-generation assistant to generate a **production-ready Google ADK project**.
+
+Generate a complete production-ready Python project using Google Agent Development Kit (Google ADK), FastAPI, PostgreSQL, OpenShift, Docker, Helm, and Gemini 2.5 Pro.
+
+# Project Name
+
+Mortgage Document Processing Multi-Agent System
+
+# Business Flow
+
+1. User sends a request with a loan number.
+2. System calls an external vendor system named DMT.
+3. DMT returns a list of employment and income documents.
+4. Each document contains binary/base64 content.
+5. System uploads each document to DocHub.
+6. DocHub returns a unique document ID.
+7. Store loan number and DocHub document ID in PostgreSQL.
+8. Extract document content using Gemini.
+9. Convert extracted information into structured JSON.
+10. Store extraction JSON in PostgreSQL.
+11. Return extracted JSON response to the caller.
+
+# Technology Requirements
+
+* Python 3.12
+* Google ADK
+* Gemini 2.5 Pro
+* FastAPI
+* PostgreSQL
+* SQLAlchemy
+* Alembic
+* Docker
+* OpenShift
+* Helm
+* Pydantic
+* Async Processing
+* Structured Logging
+* OpenTelemetry
+* Prometheus Metrics
+* Pytest
+* httpx
+* Tenacity Retry Framework
+
+# Architecture
+
+Implement the following agents:
+
+1. OrchestratorAgent
+2. DMTRetrievalAgent
+3. DocHubStorageAgent
+4. DocumentClassificationAgent
+5. DocumentExtractionAgent
+6. ValidationAgent
+7. PersistenceAgent
+8. AuditAgent
+
+# Agent Responsibilities
+
+## OrchestratorAgent
+
+Responsible for:
+
+* Receive loan number
+* Coordinate all agents
+* Handle retries
+* Maintain workflow state
+* Return final response
+
+## DMTRetrievalAgent
+
+Input:
+
+{
+"loanNumber":"123456"
+}
+
+Call DMT API:
+
+GET /documents/{loanNumber}
+
+Response:
+
+[
+{
+"documentName":"paystub.pdf",
+"documentType":"PAYSTUB",
+"content":"base64..."
+}
+]
+
+## DocHubStorageAgent
+
+Upload document to DocHub.
+
+Input:
+
+{
+"loanNumber":"123456",
+"documentName":"paystub.pdf",
+"content":"base64..."
+}
+
+Call:
+
+POST /dochub/upload
+
+Response:
+
+{
+"docId":"DOC123456"
+}
+
+## DocumentClassificationAgent
+
+Classify document types:
+
+* Paystub
+* W2
+* Tax Return
+* Bank Statement
+* VOE
+* 1099
+* Other
+
+Use Gemini for classification.
+
+## DocumentExtractionAgent
+
+Use Gemini 2.5 Pro.
+
+Extract fields based on document type.
+
+For PAYSTUB extract:
+
+{
+"borrowerName":"",
+"employeeId":"",
+"employerName":"",
+"payFrequency":"",
+"grossIncome":"",
+"netIncome":"",
+"ytdIncome":"",
+"payPeriodStart":"",
+"payPeriodEnd":""
+}
+
+For W2 extract:
+
+{
+"employeeName":"",
+"employerName":"",
+"taxYear":"",
+"wagesTipsCompensation":"",
+"socialSecurityWages":"",
+"medicareWages":"",
+"federalTaxWithheld":""
+}
+
+Return valid JSON only.
+
+## ValidationAgent
+
+Validate:
+
+* Required fields present
+* Numeric values valid
+* Dates valid
+* JSON schema valid
+
+Return validation status.
+
+## PersistenceAgent
+
+Store data into PostgreSQL.
+
+## AuditAgent
+
+Create audit logs for:
+
+* Request received
+* DMT retrieval
+* DocHub upload
+* Extraction completed
+* Validation completed
+* Database persistence
+* Final response
+
+# Database Design
+
+Create SQLAlchemy models and Alembic migrations.
+
+Table: loan_documents
+
+Columns:
+
+* id
+* loan_number
+* doc_id
+* document_name
+* document_type
+* created_timestamp
+
+Table: loan_extractions
+
+Columns:
+
+* id
+* loan_number
+* doc_id
+* extraction_json JSONB
+* validation_status
+* created_timestamp
+
+Table: audit_log
+
+Columns:
+
+* id
+* loan_number
+* event_type
+* event_details
+* created_timestamp
+
+# ADK Implementation
+
+Use Google ADK patterns.
+
+Create:
+
+agents/
+tools/
+models/
+prompts/
+services/
+database/
+api/
+tests/
+helm/
+
+Implement all agents as separate ADK agents.
+
+Implement all external integrations as ADK tools.
+
+# Tools
+
+Create tools:
+
+DMTTool
+DocHubTool
+GeminiExtractionTool
+GeminiClassificationTool
+PostgresTool
+AuditTool
+
+# API Layer
+
+Create FastAPI endpoint:
+
+POST /api/v1/loans/process
+
+Request:
+
+{
+"loanNumber":"123456"
+}
+
+Response:
+
+{
+"loanNumber":"123456",
+"documents":[
+{
+"docId":"DOC123",
+"documentType":"PAYSTUB",
+"extractedData":{}
+}
+]
+}
+
+# Error Handling
+
+Implement:
+
+* Retry for DMT calls
+* Retry for DocHub calls
+* Retry for Gemini calls
+* Circuit breaker pattern
+* Graceful failure handling
+* Dead letter queue design documentation
+
+# Security
+
+Implement:
+
+* JWT authentication
+* API key support
+* Secret management through OpenShift Secrets
+* TLS support
+* Input validation
+* PII masking in logs
+
+# Observability
+
+Implement:
+
+* Structured JSON logging
+* OpenTelemetry tracing
+* Prometheus metrics
+* Health endpoints
+
+Endpoints:
+
+GET /health
+GET /ready
+GET /metrics
+
+# OpenShift
+
+Generate:
+
+Dockerfile
+
+deployment.yaml
+
+service.yaml
+
+route.yaml
+
+configmap.yaml
+
+secret.yaml
+
+hpa.yaml
+
+networkpolicy.yaml
+
+serviceaccount.yaml
+
+role.yaml
+
+rolebinding.yaml
+
+# Helm
+
+Generate a complete Helm chart.
+
+Support:
+
+* dev
+* qa
+* prod
+
+values.yaml
+
+templates/
+
+# Configuration
+
+Use environment variables for:
+
+DATABASE_URL
+DMT_BASE_URL
+DMT_API_KEY
+DOCHUB_BASE_URL
+DOCHUB_API_KEY
+GEMINI_PROJECT_ID
+GEMINI_LOCATION
+GEMINI_MODEL
+JWT_SECRET
+
+# Testing
+
+Generate:
+
+Unit Tests
+Integration Tests
+Agent Tests
+Mock Gemini Responses
+Mock DMT Responses
+Mock DocHub Responses
+
+Minimum 80% code coverage.
+
+# Additional Requirement
+
+Implement document processing asynchronously.
+
+Use:
+
+asyncio
+FastAPI async endpoints
+connection pooling
+
+Generate complete code with:
+
+* Folder structure
+* Source code
+* Dockerfile
+* Helm charts
+* SQLAlchemy models
+* Alembic migrations
+* ADK agents
+* ADK tools
+* FastAPI APIs
+* OpenShift deployment manifests
+* Unit tests
+* README
+* Architecture diagram in Mermaid format
+
+Provide production-grade code, not pseudo code.
+
+This prompt is optimized to generate a complete enterprise-grade starter project that can be deployed directly to OpenShift and integrated with Gemini, DMT, DocHub, and PostgreSQL.
+
+
+
+DESIGN:
+
+This is a very good use case for **Google ADK (Agent Development Kit)** because the workflow has multiple external systems, document processing, storage, and LLM extraction steps.
+
+My recommendation is **not to create one giant agent**. Instead, create a **multi-agent workflow** where each agent owns one business capability.
+
+# High-Level Architecture
+
+```text
+                    +----------------+
+User Request ------>| API Gateway    |
+                    +--------+-------+
+                             |
+                             v
+                    +------------------+
+                    | Orchestrator     |
+                    | Agent            |
+                    +--------+---------+
+                             |
+      ---------------------------------------------------
+      |              |              |                  |
+      v              v              v                  v
+
++-----------+ +------------+ +------------+ +-------------+
+| DMT Agent | | DocHub     | | Extraction | | DB Agent    |
+|           | | Agent      | | Agent      | |             |
++-----+-----+ +------+-----+ +------+-----+ +------+------+
+      |              |              |               |
+      v              v              v               v
+
+  DMT API      DocHub API      Gemini LLM      PostgreSQL
+```
+
+---
+
+# Agent Responsibilities
+
+## 1. Orchestrator Agent
+
+Responsible for:
+
+* Receive Loan Number
+* Call DMT Agent
+* Call DocHub Agent
+* Call Extraction Agent
+* Call DB Agent
+* Return Final Response
+
+This agent never performs business logic itself.
+
+---
+
+## 2. DMT Agent
+
+Purpose:
+
+```python
+Input:
+{
+   "loanNumber":"123456"
+}
+```
+
+Call vendor API:
+
+```http
+GET /documents/{loanNumber}
+```
+
+Response:
+
+```json
+[
+   {
+      "documentName":"W2.pdf",
+      "binaryContent":"base64..."
+   },
+   {
+      "documentName":"Paystub.pdf",
+      "binaryContent":"base64..."
+   }
+]
+```
+
+Return documents to Orchestrator.
+
+---
+
+## 3. DocHub Agent
+
+Purpose:
+
+Upload document into DocHub.
+
+Input:
+
+```json
+{
+   "loanNumber":"123456",
+   "documentName":"W2.pdf",
+   "binaryContent":"..."
+}
+```
+
+Call:
+
+```http
+POST /dochub/upload
+```
+
+Response:
+
+```json
+{
+   "docId":"DOC12345"
+}
+```
+
+Return:
+
+```json
+{
+   "loanNumber":"123456",
+   "docId":"DOC12345"
+}
+```
+
+---
+
+## 4. Extraction Agent
+
+Purpose:
+
+Convert document into structured JSON.
+
+Input:
+
+```json
+{
+   "docId":"DOC12345",
+   "documentContent":"base64"
+}
+```
+
+Gemini Prompt:
+
+```text
+You are a mortgage document extraction agent.
+
+Extract:
+
+- Borrower Name
+- Employer Name
+- Employer Address
+- Pay Frequency
+- Gross Income
+- Net Income
+- Year To Date Income
+
+Return valid JSON only.
+```
+
+Gemini Output:
+
+```json
+{
+  "borrowerName":"John Smith",
+  "employerName":"ABC Corp",
+  "grossIncome":8500,
+  "netIncome":6200
+}
+```
+
+---
+
+## 5. DB Agent
+
+Purpose:
+
+Store metadata.
+
+Tables:
+
+### loan_documents
+
+```sql
+CREATE TABLE loan_documents (
+    id BIGSERIAL PRIMARY KEY,
+    loan_number VARCHAR(30),
+    doc_id VARCHAR(100),
+    document_type VARCHAR(100),
+    created_date TIMESTAMP
+);
+```
+
+### loan_document_extractions
+
+```sql
+CREATE TABLE loan_document_extractions (
+    id BIGSERIAL PRIMARY KEY,
+    loan_number VARCHAR(30),
+    doc_id VARCHAR(100),
+    extraction_json JSONB,
+    created_date TIMESTAMP
+);
+```
+
+---
+
+# ADK Project Structure
+
+```text
+mortgage-ai-agents/
+
+├── agents/
+│   ├── orchestrator_agent.py
+│   ├── dmt_agent.py
+│   ├── dochub_agent.py
+│   ├── extraction_agent.py
+│   └── db_agent.py
+│
+├── tools/
+│   ├── dmt_tool.py
+│   ├── dochub_tool.py
+│   ├── postgres_tool.py
+│   └── gemini_tool.py
+│
+├── prompts/
+│   └── extraction_prompt.txt
+│
+├── models/
+│   └── document_models.py
+│
+├── api/
+│   └── main.py
+│
+├── Dockerfile
+├── requirements.txt
+└── helm/
+```
+
+---
+
+# ADK Agent Example
+
+## DMT Tool
+
+```python
+from google.adk.tools import Tool
+
+class DMTTool(Tool):
+
+    def run(self, loan_number: str):
+
+        response = requests.get(
+            f"{DMT_URL}/{loan_number}"
+        )
+
+        return response.json()
+```
+
+---
+
+## DMT Agent
+
+```python
+from google.adk.agents import Agent
+
+dmt_agent = Agent(
+    name="dmt_agent",
+    description="Fetch employment documents from DMT",
+    tools=[DMTTool()]
+)
+```
+
+---
+
+# Extraction Agent
+
+```python
+from google.genai import Client
+
+client = Client()
+
+def extract_document(document_text):
+
+    prompt = f"""
+    Extract income and employment details.
+
+    Return valid JSON only.
+
+    {document_text}
+    """
+
+    response = client.models.generate_content(
+        model="gemini-2.5-pro",
+        contents=prompt
+    )
+
+    return response.text
+```
+
+---
+
+# Orchestrator Workflow
+
+```python
+async def process_loan(loan_number):
+
+    documents = await dmt_agent.run(
+        loan_number=loan_number
+    )
+
+    results = []
+
+    for document in documents:
+
+        doc_id = await dochub_agent.run(document)
+
+        await db_agent.save_document(
+            loan_number,
+            doc_id
+        )
+
+        extraction = await extraction_agent.run(
+            document
+        )
+
+        await db_agent.save_extraction(
+            loan_number,
+            doc_id,
+            extraction
+        )
+
+        results.append(extraction)
+
+    return results
+```
+
+---
+
+# REST API Layer
+
+Use FastAPI.
+
+```python
+@app.post("/process-loan")
+async def process(request: LoanRequest):
+
+    response = await orchestrator.process_loan(
+        request.loan_number
+    )
+
+    return response
+```
+
+---
+
+# OpenShift Deployment
+
+## Dockerfile
+
+```dockerfile
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install -r requirements.txt
+
+CMD ["uvicorn",
+     "api.main:app",
+     "--host",
+     "0.0.0.0",
+     "--port",
+     "8080"]
+```
+
+---
+
+## ConfigMap
+
+Store:
+
+```yaml
+DMT_URL
+DOCHUB_URL
+GEMINI_MODEL
+```
+
+---
+
+## Secret
+
+Store:
+
+```yaml
+DB_PASSWORD
+GEMINI_API_KEY
+DOCHUB_TOKEN
+DMT_TOKEN
+```
+
+---
+
+# Recommended Production Enhancements
+
+For Citi-scale mortgage processing, I would extend the design:
+
+### Agent 1
+
+Document Retrieval Agent
+
+### Agent 2
+
+Document Storage Agent
+
+### Agent 3
+
+Document Classification Agent
+
+Determines:
+
+```text
+W2
+Paystub
+Bank Statement
+VOE
+Tax Return
+1099
+```
+
+### Agent 4
+
+Extraction Agent
+
+Different prompts per document type.
+
+### Agent 5
+
+Validation Agent
+
+Checks:
+
+```text
+Income > 0
+Borrower Name Exists
+Required Fields Present
+```
+
+### Agent 6
+
+Persistence Agent
+
+Stores validated data.
+
+### Agent 7
+
+Audit Agent
+
+Creates audit trail and observability logs.
+
+---
+
+For your Citigroup mortgage use case running on OpenShift with Gemini, a **Supervisor/Orchestrator Agent + 6 specialized agents + PostgreSQL + FastAPI + ADK tools** is the cleanest enterprise design. It gives you separation of concerns, independent testing, scalability, and the ability to add more document types later without changing the overall workflow.
